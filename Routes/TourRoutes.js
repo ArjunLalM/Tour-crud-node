@@ -5,6 +5,11 @@ import {
   getMyTours,
   updateTour,
   DeleteTour,
+  getToursById,
+  getToursFiltering,
+  getTopRatedTours,
+  getToursSearch,
+  getBookedCountByTour,
 } from "../Controller/tourController.js";
 import {
   validateJSONField,
@@ -18,6 +23,7 @@ import authCheck from "../middlewares/authCheck.js";
 import createMultipleFileupload from "../middlewares/multer/createMultipleFileupload.js";
 import { addItineraryToTour ,deleteItineraryTour,updateItineraryTour} from "../Controller/itineraryController.js";
 
+
 const router = express.Router();
 router.post("/getAllTours",getTours );
 router.use(authCheck);
@@ -28,11 +34,12 @@ router.post(
   getMyTours
 );
 
-
+router.post("/viewTour", [check("tourId").not().isEmpty()], getToursById);
 router.patch(
   "/updateTour",
   createMultipleFileupload('cover_image'),
   [check("tourId").not().isEmpty()],
+  body("coordinates").custom(validateJSONField("Coordinates", coordinatesValidator)),
   updateTour
 );
 router.patch(
@@ -57,9 +64,12 @@ router.post(
   ],
   createTour
 );
+router.post("/topRatedTour", getTopRatedTours);
 
 router.patch("/delete", [check("tourId").not().isEmpty()], DeleteTour);
-
+router.get("/searchTour", getToursSearch);
 router.post("/addNew",[check("tourId").not().isEmpty()], body("itinerary").custom(validateJSONField("Itinerary", itineraryValidator)),addItineraryToTour)
 router.patch('/deleteItinerary',[check("tourId").not().isEmpty()],deleteItineraryTour)
+router.post("/booked-count", getBookedCountByTour);
+router.post('/filter', getToursFiltering);
 export default router;

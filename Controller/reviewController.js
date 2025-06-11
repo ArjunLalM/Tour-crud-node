@@ -72,6 +72,7 @@ export const updateReview = async (req, res, next) => {
     const { role, userId } = req.userData;
 
     console.log(userId, "userId", role, "role");
+    console.log(req.body,"ppppppppp")
 
     // Check if user has the correct role
     if (role !== "user") {
@@ -121,20 +122,15 @@ export const getBookReviews = async (req, res, next) => {
 
     const { tourId } = req.body;
     const {userId} = req.userData; // Assuming this is user ID (tour operator)
-console.log(tourId,userId)
+
     // Find the tour
     const tour = await Tour.findById(tourId);
-console.log(tour.tour_operator.toString(),userId,"****************")
+
     if (!tour) {
       return next(new HttpError("Tour not found.", 404));
     }
 
-    // Check if the current user is the tour creator
-if (tour.tour_operator.toString() !== userId){
-  return next(
-    new HttpError("You are not authorized to access reviews for this tour.", 403)
-  );
-}
+  
 
     // Get reviews for the tour
     const reviews = await Reviews.find({ tour: tourId }).populate("user");
@@ -153,6 +149,30 @@ if (tour.tour_operator.toString() !== userId){
     return next(
       new HttpError(
         "Oops! Process failed, please contact the admin. Review retrieval failed.",
+        500
+      )
+    );
+  }
+};
+
+
+// GET ALL REVIEWS
+export const getAllReviews = async (req, res, next) => {
+  try {
+    const reviews = await Reviews.find()
+      .populate("user", "firstName") 
+      .populate("tour", "title");     
+
+    res.status(200).json({
+      status: true,
+      message: "All reviews fetched successfully.",
+      data: reviews,
+    });
+  } catch (err) {
+    console.error(err);
+    return next(
+      new HttpError(
+        "Oops! Could not fetch reviews. Please try again later.",
         500
       )
     );

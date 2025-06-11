@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createReview,
+  getAllReviews,
   getBookReviews,
   updateReview,
 } from "../Controller/reviewController.js";
@@ -12,7 +13,7 @@ const router = express.Router();
 // router.post("/getAll", getBooks);
 
 router.use(authCheck);
-
+router.post("/all",getAllReviews); 
 router.post(
   "/addReview",
   [

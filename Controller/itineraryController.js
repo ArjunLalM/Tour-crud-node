@@ -23,7 +23,7 @@ export const addItineraryToTour = async (req, res, next) => {
     }
 
     const { tourId, itinerary } = req.body;
-
+console.log(req.body,"checking for itinerary")
     const tour = await Tour.findById(tourId);
     if (!tour) {
       return next(new HttpError("Tour not found", 404));
